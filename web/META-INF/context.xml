@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context antiJARLocking="true" path="/BlogApp">
+  <Resource name="jdbc/blogappDataSource" auth="Container"
+            type="javax.sql.DataSource"
+            factory="org.apache.commons.dbcp.BasicDataSourceFactory"
+            driverClassName="org.postgresql.Driver"
+            url="jdbc:postgresql://localhost:5432/blogapp"
+            username="blogapp" password="password" />
+</Context>
