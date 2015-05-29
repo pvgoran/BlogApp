@@ -2,4 +2,5 @@
 /build/
 /nbproject/build-impl.xml
 /nbproject/private/
+/nbproject/genfiles.properties
 /lib/nblibraries-private.properties
