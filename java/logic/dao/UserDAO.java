@@ -84,6 +84,48 @@ public class UserDAO
         return users;
     }
 
+    public void updateUser(int userId, String firstName, String lastName, String login) throws SQLException
+    {
+        Connection conn = dataSource.getConnection();
+        PreparedStatement stmt = conn.prepareStatement("update users set firstname=?, lastname=?, login=? where id=?");
+
+        StatementData sdt = new StatementData(stmt);
+        sdt.addString(firstName);
+        sdt.addString(lastName);
+        sdt.addString(login);
+
+        sdt.addInt(userId);
+
+        stmt.execute();
+    }
+
+    public void deleteUser(int userId) throws SQLException
+    {
+        Connection conn = dataSource.getConnection();
+        PreparedStatement stmt = conn.prepareStatement("delete from users where id=?");
+
+        StatementData sdt = new StatementData(stmt);
+        sdt.addInt(userId);
+
+        stmt.execute();
+    }
+
+    public String canDeleteUser(int userId) throws SQLException, DataException
+    {
+        Connection conn = dataSource.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(
+                "select case when exists (select 1 from posts p where p.createuserid=?) then 'Post'"
+                        + "else null end");
+
+        StatementData sdt = new StatementData(stmt);
+        sdt.addInt(userId);
+
+        ResultSet res = stmt.executeQuery();
+        res.next();
+
+        return res.getString(1);
+    }
+
     private User loadUser(SqlDataRecord rec) throws DataException
     {
         return new User(rec.readInt(), rec.readTimestamp(), rec.readString(), rec.readString(), rec.readString());

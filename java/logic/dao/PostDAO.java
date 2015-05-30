@@ -1,17 +1,15 @@
 package logic.dao;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import javax.sql.DataSource;
-import logic.model.Post;
 
 import org.joda.time.DateTime;
 
 import pvgoran.dataaccess.*;
 
-import logic.model.User;
+import logic.model.Post;
 
 public class PostDAO
 {
@@ -66,6 +64,31 @@ public class PostDAO
         }
 
         return posts;
+    }
+
+    public void updatePost(int postId, DateTime updateTimestamp, String text) throws SQLException
+    {
+        Connection conn = dataSource.getConnection();
+        PreparedStatement stmt = conn.prepareStatement("update posts set updatetimestamp=?, text=? where id=?");
+
+        StatementData sdt = new StatementData(stmt);
+        sdt.addTimestamp(updateTimestamp);
+        sdt.addString(text);
+
+        sdt.addInt(postId);
+
+        stmt.execute();
+    }
+
+    public void deletePost(int postId) throws SQLException
+    {
+        Connection conn = dataSource.getConnection();
+        PreparedStatement stmt = conn.prepareStatement("delete from posts where id=?");
+
+        StatementData sdt = new StatementData(stmt);
+        sdt.addInt(postId);
+
+        stmt.execute();
     }
 
     private Post loadPost(SqlDataRecord rec) throws DataException
