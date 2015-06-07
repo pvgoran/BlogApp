@@ -3,7 +3,6 @@ package logic.dao;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.sql.DataSource;
 
 import org.joda.time.DateTime;
@@ -19,16 +18,17 @@ public class UserDAO
         this.dataSource = dataSource;
     }
 
-    public int createUser(String firstName, String lastName, String login) throws SQLException
+    public int createUser(String firstName, String lastName, String username, String passwordSha256) throws SQLException
     {
         Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement("insert into users(createtimestamp, firstname, lastname, login) values (?, ?, ?, ?) returning id");
+        PreparedStatement stmt = conn.prepareStatement("insert into users(createtimestamp, firstname, lastname, username, passwordsha256) values (?, ?, ?, ?, ?) returning id");
 
         StatementData sdt = new StatementData(stmt);
         sdt.addTimestamp(DateTime.now());
         sdt.addString(firstName);
         sdt.addString(lastName);
-        sdt.addString(login);
+        sdt.addString(username);
+        sdt.addString(passwordSha256);
 
         ResultSet lastIdRes = stmt.executeQuery();
         lastIdRes.next();
@@ -38,7 +38,7 @@ public class UserDAO
     public User getUser(int userId) throws SQLException, DataException
     {
         Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement("select u.id, u.createtimestamp, u.firstname, u.lastname, u.login from users u where u.id=?");
+        PreparedStatement stmt = conn.prepareStatement("select u.id, u.createtimestamp, u.firstname, u.lastname, u.username, u.passwordsha256 from users u where u.id=?");
 
         StatementData sdt = new StatementData(stmt);
         sdt.addInt(userId);
@@ -52,10 +52,28 @@ public class UserDAO
         }
     }
 
+    public User getUserForLogin(String username, String passwordSha256) throws SQLException, DataException
+    {
+        Connection conn = dataSource.getConnection();
+        PreparedStatement stmt = conn.prepareStatement("select u.id, u.createtimestamp, u.firstname, u.lastname, u.username, u.passwordsha256 from users u where u.username=? and u.passwordsha256=?");
+
+        StatementData sdt = new StatementData(stmt);
+        sdt.addString(username);
+        sdt.addString(passwordSha256);
+
+        ResultSet res = stmt.executeQuery();
+        if (res.next()) {
+            SqlDataRecord rec = new SqlDataRecord(res);
+            return loadUser(rec);
+        } else {
+            return null;
+        }
+    }
+
 //    public UserWithStatistics getUserWithStatistics(int userId) throws SQLException, DataException
 //    {
 //        Connection conn = dataSource.getConnection();
-//        PreparedStatement stmt = conn.prepareStatement("select u.id, u.createtimestamp, u.firstname, u.lastname, u.login, (select count(1) from posts p where p.userid=u.id), (select count(1) from comments c where c.userid=u.id) from users u where u.id=?");
+//        PreparedStatement stmt = conn.prepareStatement("select u.id, u.createtimestamp, u.firstname, u.lastname, u.username, u.passwordsha256, (select count(1) from posts p where p.userid=u.id), (select count(1) from comments c where c.userid=u.id) from users u where u.id=?");
 //
 //        StatementData sdt = new StatementData(stmt);
 //        sdt.addInt(userId);
@@ -72,7 +90,7 @@ public class UserDAO
     public List<User> getUsers() throws SQLException, DataException
     {
         Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement("select u.id, u.createtimestamp, u.firstname, u.lastname, u.login from users u");
+        PreparedStatement stmt = conn.prepareStatement("select u.id, u.createtimestamp, u.firstname, u.lastname, u.username, u.passwordsha256 from users u");
 
         ResultSet res = stmt.executeQuery();
         List<User> users = new ArrayList<>();
@@ -84,15 +102,16 @@ public class UserDAO
         return users;
     }
 
-    public void updateUser(int userId, String firstName, String lastName, String login) throws SQLException
+    public void updateUser(int userId, String firstName, String lastName, String username, String passwordSha256) throws SQLException
     {
         Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement("update users set firstname=?, lastname=?, login=? where id=?");
+        PreparedStatement stmt = conn.prepareStatement("update users set firstname=?, lastname=?, username=?, passwordsha256=? where id=?");
 
         StatementData sdt = new StatementData(stmt);
         sdt.addString(firstName);
         sdt.addString(lastName);
-        sdt.addString(login);
+        sdt.addString(username);
+        sdt.addString(passwordSha256);
 
         sdt.addInt(userId);
 
@@ -128,12 +147,12 @@ public class UserDAO
 
     private User loadUser(SqlDataRecord rec) throws DataException
     {
-        return new User(rec.readInt(), rec.readTimestamp(), rec.readString(), rec.readString(), rec.readString());
+        return new User(rec.readInt(), rec.readTimestamp(), rec.readString(), rec.readString(), rec.readString(), rec.readString());
     }
 
 //    private void loadUserPartial(User user, SqlDataRecord rec)
 //    {
-//        user.initUserPartial(rec.readInt(), rec.readTimestamp(), rec.readString(), rec.readString(), rec.readString());
+//        user.initUserPartial(rec.readInt(), rec.readTimestamp(), rec.readString(), rec.readString(), rec.readString(), rec.readString());
 //    }
 //
 //    private void loadUserWithStatisticsPartial(UserWithStatistics userWithStatistics, SqlDataRecord rec)

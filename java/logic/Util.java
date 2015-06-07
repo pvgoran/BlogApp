@@ -1,5 +1,7 @@
 package logic;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.util.Calendar;
 
@@ -34,5 +36,22 @@ public class Util
         timestampCalendar.set(Calendar.MILLISECOND, dateTime.getMillisOfSecond());
 
         return new java.sql.Timestamp(timestampCalendar.getTimeInMillis());
+    }
+
+    public static String hashSha256(String str)
+    {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] result = digest.digest(str.getBytes());
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < result.length; i++) {
+                sb.append(Integer.toString((result[i] & 0xff) + 0x100, 16).substring(1));
+            }
+
+            return sb.toString();
+        } catch (NoSuchAlgorithmException ex) {
+            throw new RuntimeException("SHA256 not implemented. Weird.");
+        }
     }
 }

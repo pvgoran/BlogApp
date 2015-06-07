@@ -24,7 +24,7 @@ public class TestAction extends Action
     @Override
     public void process(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException, SQLException, DataException
     {
-        int newUserId = db.userDAO.createUser("First", "Last", "user");
+        int newUserId = db.userDAO.createUser("First", "Last", "user", "");
 
         List<User> users = db.userDAO.getUsers();
 

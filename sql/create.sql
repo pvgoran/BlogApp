@@ -6,7 +6,8 @@ create table users
   createtimestamp timestamp not null,
   firstname varchar(255) not null,
   lastname varchar(255) not null,
-  login varchar(255) not null
+  username varchar(255) not null,
+  passwordsha256 varchar(255) not null
 );
 
 create sequence posts_seq;

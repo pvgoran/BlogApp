@@ -10,8 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import pvgoran.dataaccess.DataException;
 
-import blogapp.action.PostAction;
-import blogapp.action.TestAction;
+import blogapp.action.*;
+import logic.model.User;
 
 /**
  *
@@ -34,16 +34,31 @@ public class BlogServlet extends HttpServlet
         }
     }
 
+    public static User getLoggedInUser(HttpServletRequest req)
+    {
+        return (User)req.getSession().getAttribute("loggedInUser");
+    }
+
+    public static void setLoggedInUser(HttpServletRequest req, User user)
+    {
+        req.getSession().setAttribute("loggedInUser", user);
+    }
+
+    public static void removeLoggedInUser(HttpServletRequest req)
+    {
+        req.getSession().removeAttribute("loggedInUser");
+    }
+
     private BlogAppContext createAppContext(HttpServletRequest req, HttpServletResponse res)
     {
         BlogAppConfiguration configuration = BlogAppConfiguration.getConfiguration();
-        String username = "dummy";
+        User user = getLoggedInUser(req);
         
         BlogAppContext appContext = new BlogAppContext();
         appContext.configuration = configuration;
         appContext.dataSource = configuration.dataSource;
         appContext.db = new BlogAppDatabase(configuration.dataSource);
-        appContext.username = username;
+        appContext.user = user;
 
         return appContext;
     }
@@ -60,6 +75,8 @@ public class BlogServlet extends HttpServlet
             case "":
             case "test":
                 return new TestAction();
+            case "login":
+                return new LoginAction();
             case "post":
                 return new PostAction();
             default:

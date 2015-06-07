@@ -12,7 +12,13 @@
   </head>
   <body>
     <h1>Hello Cruel World!</h1>
-    <div>You are <b><%=ac.username%></b>, right?</div>
+<%  if (ac.user != null) { %>
+    <div>You are <b><%=ac.user.firstName%> <%=ac.user.lastName%></b>, right?</div>
+<%  } else { %>
+    <div>
+      <a href="?action=login">Log in</a>
+    </div>
+<%  } %>
     <div>I have <%=pl.postCount%> post(s) for you.</div>
 
     <div>
