@@ -14,17 +14,17 @@ public abstract class Action
     protected BlogAppContext appContext;
     protected BlogAppDatabase db;
 
+    public Action(BlogAppContext appContext)
+    {
+        this.appContext = appContext;
+        this.db = appContext.db;
+    }
+
     public abstract void process(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException, SQLException, DataException;
 
     public void forward(String path, HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
     {
         req.setAttribute("ac", appContext);
         req.getRequestDispatcher(path).forward(req, res);
-    }
-
-    public void setAppContext(BlogAppContext appContext)
-    {
-        this.appContext = appContext;
-        this.db = appContext.db;
     }
 }

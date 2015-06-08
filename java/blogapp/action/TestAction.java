@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import pvgoran.dataaccess.DataException;
 
 import blogapp.Action;
+import blogapp.BlogAppContext;
 import logic.model.User;
 
 public class TestAction extends Action
@@ -19,6 +20,11 @@ public class TestAction extends Action
     {
         public int postCount;
         public List<User> users;
+    }
+
+    public TestAction(BlogAppContext appContext)
+    {
+        super(appContext);
     }
 
     @Override

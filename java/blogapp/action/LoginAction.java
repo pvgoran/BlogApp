@@ -9,8 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import pvgoran.dataaccess.DataException;
 
-import blogapp.Action;
-import blogapp.BlogServlet;
+import blogapp.*;
 import logic.Util;
 import logic.model.User;
 
@@ -20,6 +19,11 @@ public class LoginAction extends Action
     {
         public String errorMessage;
         public String username;
+    }
+
+    public LoginAction(BlogAppContext appContext)
+    {
+        super(appContext);
     }
 
     @Override

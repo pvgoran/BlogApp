@@ -70,6 +70,18 @@ public class UserDAO
         }
     }
 
+    public boolean testUserExists(String username) throws SQLException, DataException
+    {
+        Connection conn = dataSource.getConnection();
+        PreparedStatement stmt = conn.prepareStatement("select 1 from users u where u.username=?");
+
+        StatementData sdt = new StatementData(stmt);
+        sdt.addString(username);
+
+        ResultSet res = stmt.executeQuery();
+        return res.next();
+    }
+
 //    public UserWithStatistics getUserWithStatistics(int userId) throws SQLException, DataException
 //    {
 //        Connection conn = dataSource.getConnection();

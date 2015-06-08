@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import blogapp.Action;
+import blogapp.BlogAppContext;
 
 /**
  *
@@ -14,6 +15,11 @@ import blogapp.Action;
  */
 public class PostAction extends Action
 {
+    public PostAction(BlogAppContext appContext)
+    {
+        super(appContext);
+    }
+
     @Override
     public void process(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
     {

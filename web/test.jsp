@@ -14,6 +14,7 @@
     <h1>Hello Cruel World!</h1>
 <%  if (ac.user != null) { %>
     <div>You are <b><%=ac.user.firstName%> <%=ac.user.lastName%></b>, right?</div>
+    <div>Or <a href="?action=logout">you are not</a>?</div>
 <%  } else { %>
     <div>
       <a href="?action=login">Log in</a>

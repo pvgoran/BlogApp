@@ -27,5 +27,9 @@
         <input type="submit" value="Login" />
       </div>
     </form>
+    <div>&nbsp;</div>
+    <div>
+      <a href="?action=register">Register</a> if you don't have a login.
+    </div>
   </body>
 </html>

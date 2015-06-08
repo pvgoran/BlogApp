@@ -24,8 +24,7 @@ public class BlogServlet extends HttpServlet
     {
         BlogAppContext appContext = createAppContext(req, res);
 
-        Action action = selectAction(req.getParameter("action"));
-        action.setAppContext(appContext);
+        Action action = selectAction(req.getParameter("action"), appContext);
 
         try {
             action.process(req, res);
@@ -63,22 +62,28 @@ public class BlogServlet extends HttpServlet
         return appContext;
     }
 
-    private Action selectAction(String actionName)
+    private Action selectAction(String actionName, BlogAppContext appContext)
     {
         if (actionName == null)
         {
-            return new TestAction();
+            return new TestAction(appContext);
         }
 
         switch (actionName)
         {
             case "":
             case "test":
-                return new TestAction();
+                return new TestAction(appContext);
             case "login":
-                return new LoginAction();
+                return new LoginAction(appContext);
+            case "logout":
+                return new LogoutAction(appContext);
+            case "register":
+                return new RegisterAction(appContext);
+            case "doRegister":
+                return new DoRegisterAction(appContext);
             case "post":
-                return new PostAction();
+                return new PostAction(appContext);
             default:
                 throw new RuntimeException("Unknown action");
         }
