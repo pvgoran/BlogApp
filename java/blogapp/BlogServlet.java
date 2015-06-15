@@ -80,6 +80,8 @@ public class BlogServlet extends HttpServlet
                 return new LogoutAction(appContext);
             case "register":
                 return new RegisterAction(appContext);
+            case "registerJson":
+                return new RegisterJsonAction(appContext);
             case "doRegister":
                 return new DoRegisterAction(appContext);
             case "post":
