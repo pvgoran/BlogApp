@@ -1,4 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="h" uri="/WEB-INF/HtmlFormat"%>
 
 <jsp:useBean id="ac" type="blogapp.BlogAppContext" scope="request" />
 <jsp:useBean id="pl" type="blogapp.action.DoRegisterAction.RegisteredPayload" scope="request" />
@@ -10,7 +11,7 @@
     <title>Registration Successful!</title>
   </head>
   <body>
-    <h1>You are <%=pl.user.username%>!</h1>
+    <h1>You are <h:HtmlEncode><%=pl.user.username%></h:HtmlEncode>!</h1>
     <div>Registration successful. Now <a href="?action=login">Log In</a>.</div>
   </body>
 </html>

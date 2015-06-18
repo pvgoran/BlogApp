@@ -1,4 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="h" uri="/WEB-INF/HtmlFormat"%>
 
 <jsp:useBean id="ac" type="blogapp.BlogAppContext" scope="request" />
 <jsp:useBean id="pl" type="blogapp.action.LoginAction.LoginPayload" scope="request" />
@@ -12,12 +13,12 @@
   <body>
     <h1>Abandon all hope</h1>
 <%  if (pl.errorMessage != null) { %>
-    <div style="color: red;"><%=pl.errorMessage%></div>
+    <div style="color: red;"><h:HtmlEncode><%=pl.errorMessage%></h:HtmlEncode></div>
 <%  } %>
     <form action="?action=login" method="post">
       <div>Username:</div>
       <div>
-        <input type="text" name="username" value="<%=pl.username != null ? pl.username : ""%>" />
+        <input type="text" name="username" value="<h:QuotedValueEncode><%=pl.username != null ? pl.username : ""%></h:QuotedValueEncode>" />
       </div>
       <div>Password:</div>
       <div>

@@ -1,5 +1,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="logic.model.User"%>
+<%@taglib prefix="h" uri="/WEB-INF/HtmlFormat"%>
 
 <jsp:useBean id="ac" type="blogapp.BlogAppContext" scope="request" />
 <jsp:useBean id="pl" type="blogapp.action.TestAction.TestPayload" scope="request" />
@@ -13,7 +14,7 @@
   <body>
     <h1>Hello Cruel World!</h1>
 <%  if (ac.user != null) { %>
-    <div>You are <b><%=ac.user.firstName%> <%=ac.user.lastName%></b>, right?</div>
+    <div>You are <b><h:HtmlEncode><%=ac.user.firstName%> <%=ac.user.lastName%></h:HtmlEncode></b>, right?</div>
     <div>Or <a href="?action=logout">you are not</a>?</div>
 <%  } else { %>
     <div>
@@ -25,7 +26,7 @@
     <div>
       My users:
 <%  for (User user: pl.users) { %>
-      <div>#<%=user.id%>, created <%=user.createTimestamp.toString()%></div>
+      <div>#<%=user.id%>, created <h:HtmlEncode><%=user.createTimestamp.toString()%></h:HtmlEncode></div>
 <%  } %>
     </div>
 

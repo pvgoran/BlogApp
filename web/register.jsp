@@ -1,4 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="h" uri="/WEB-INF/HtmlFormat"%>
 
 <jsp:useBean id="ac" type="blogapp.BlogAppContext" scope="request" />
 <jsp:useBean id="pl" type="blogapp.action.RegisterAction.RegisterPayload" scope="request" />
@@ -40,12 +41,12 @@
 
   <h1>Who are you?</h1>
 <%  if (pl.errorMessage != null) { %>
-  <div style="color: red;"><%=pl.errorMessage%></div>
+  <div style="color: red;"><h:HtmlEncode><%=pl.errorMessage%></h:HtmlEncode></div>
 <%  } %>
   <form id="pageForm" action="nonexistent" onsubmit="return false"> <%-- action="?action=doRegister" method="post" --%>
     <div>Username:</div>
     <div>
-      <input type="text" name="username" value="<%=pl.username != null ? pl.username : ""%>" />
+      <input type="text" name="username" value="<h:QuotedValueEncode><%=pl.username != null ? pl.username : ""%></h:QuotedValueEncode>" />
     </div>
     <div>Password:</div>
     <div>
@@ -53,15 +54,15 @@
     </div>
     <div>First Name:</div>
     <div>
-      <input type="text" name="firstName" value="<%=pl.firstName != null ? pl.firstName : ""%>" />
+      <input type="text" name="firstName" value="<h:QuotedValueEncode><%=pl.firstName != null ? pl.firstName : ""%></h:QuotedValueEncode>" />
     </div>
     <div>Last Name:</div>
     <div>
-      <input type="text" name="lastName" value="<%=pl.lastName != null ? pl.lastName : ""%>" />
+      <input type="text" name="lastName" value="<h:QuotedValueEncode><%=pl.lastName != null ? pl.lastName : ""%></h:QuotedValueEncode>" />
     </div>
     <div>E-mail:</div>
     <div>
-      <input type="text" name="email" value="<%=pl.email != null ? pl.email : ""%>" />
+      <input type="text" name="email" value="<h:QuotedValueEncode><%=pl.email != null ? pl.email : ""%></h:QuotedValueEncode>" />
     </div>
     <div>&nbsp;</div>
     <div>

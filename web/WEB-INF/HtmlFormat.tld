@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taglib version="2.0" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee web-jsptaglibrary_2_0.xsd">
+  <tlibversion>1.0</tlibversion>
+  <shortname>HtmlFormat</shortname>
+  <uri>/WEB-INF/HtmlFormat</uri>
+  <info>HTML Formatting Tags </info>
+  <tag>
+    <name>HtmlEncode</name>
+    <tagclass>sites.tag.HtmlEncodeTag</tagclass>
+    <info>Encode HTML</info>
+  </tag>
+  <tag>
+    <name>TextareaEncode</name>
+    <tagclass>sites.tag.TextareaEncodeTag</tagclass>
+    <info>Encode Textarea</info>
+  </tag>
+  <tag>
+    <name>JsEncode</name>
+    <tagclass>sites.tag.JsEncodeTag</tagclass>
+    <info>Encode JavaScript</info>
+  </tag>
+  <tag>
+    <name>JsonStringEncode</name>
+    <tagclass>sites.tag.JsonStringEncodeTag</tagclass>
+    <info>Encode string for inclusion in JSON string</info>
+  </tag>
+  <tag>
+    <name>QuotedValueEncode</name>
+    <tagclass>sites.tag.QuotedValueEncodeTag</tagclass>
+    <info>Encode Quoted Value</info>
+  </tag>
+  <tag>
+    <name>UrlEncode</name>
+    <tagclass>sites.tag.UrlEncodeTag</tagclass>
+    <info>Encode URL</info>
+  </tag>
+</taglib>
