@@ -16,15 +16,18 @@
   <script type="text/javascript">
     function submitForm()
     {
+      var formData = $("#pageForm").serializeArray();
+
       $.ajax({
         url: '?action=registerJson',
-        data: {
+        data: formData,
+        /*{
           username: $("#pageForm [name='username']").val(),
           password: $("#pageForm [name='password']").val(),
           firstName: $("#pageForm [name='firstName']").val(),
           lastName: $("#pageForm [name='lastName']").val(),
           email: $("#pageForm [name='email']").val()
-        },
+        }*/
         dataType: 'json'
       }).done(function(data) {
         if (data.success) {
