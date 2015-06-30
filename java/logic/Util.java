@@ -9,6 +9,33 @@ import org.joda.time.DateTime;
 
 public class Util
 {
+    public static void closeConnection(Connection conn)
+    {
+        try {
+            if (conn != null) conn.close();
+        } catch (Exception ex) {
+            // ignore it
+        }
+    }
+
+    public static void closeStatement(PreparedStatement stmt)
+    {
+        try {
+            if (stmt != null) stmt.close();
+        } catch (Exception ex) {
+            // ignore it
+        }
+    }
+
+    public static void closeResultSet(ResultSet res)
+    {
+        try {
+            if (res != null) res.close();
+        } catch (Exception ex) {
+            // ignore it
+        }
+    }
+
     public static DateTime getDateTime(ResultSet res, int pos) throws SQLException
     {
         java.sql.Timestamp dateTime = res.getTimestamp(pos);

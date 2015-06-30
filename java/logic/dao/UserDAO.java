@@ -3,12 +3,14 @@ package logic.dao;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.sql.DataSource;
 
 import org.joda.time.DateTime;
 
 import pvgoran.dataaccess.*;
 
+import logic.Util;
 import logic.model.User;
 
 public class UserDAO
@@ -20,66 +22,104 @@ public class UserDAO
 
     public int createUser(String firstName, String lastName, String username, String passwordSha256) throws SQLException
     {
-        Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement("insert into users(createtimestamp, firstname, lastname, username, passwordsha256) values (?, ?, ?, ?, ?) returning id");
+        Connection conn = null;
+        PreparedStatement stmt = null;
 
-        StatementData sdt = new StatementData(stmt);
-        sdt.addTimestamp(DateTime.now());
-        sdt.addString(firstName);
-        sdt.addString(lastName);
-        sdt.addString(username);
-        sdt.addString(passwordSha256);
+        try {
+            conn = dataSource.getConnection();
+            stmt = conn.prepareStatement("insert into users(createtimestamp, firstname, lastname, username, passwordsha256) values (?, ?, ?, ?, ?) returning id");
 
-        ResultSet lastIdRes = stmt.executeQuery();
-        lastIdRes.next();
-        return lastIdRes.getInt(1);
+            StatementData sdt = new StatementData(stmt);
+            sdt.addTimestamp(DateTime.now());
+            sdt.addString(firstName);
+            sdt.addString(lastName);
+            sdt.addString(username);
+            sdt.addString(passwordSha256);
+
+            ResultSet lastIdRes = stmt.executeQuery();
+            lastIdRes.next();
+            return lastIdRes.getInt(1);
+        } finally {
+            Util.closeStatement(stmt);
+            Util.closeConnection(conn);
+        }
     }
 
     public User getUser(int userId) throws SQLException, DataException
     {
-        Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement("select " + generateUserSelectList("u.") + " from users u where u.id=?");
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet res = null;
 
-        StatementData sdt = new StatementData(stmt);
-        sdt.addInt(userId);
+        try {
+            conn = dataSource.getConnection();
+            stmt = conn.prepareStatement("select " + generateUserSelectList("u.") + " from users u where u.id=?");
 
-        ResultSet res = stmt.executeQuery();
-        if (res.next()) {
-            SqlDataRecord rec = new SqlDataRecord(res);
-            return loadUser(rec);
-        } else {
-            return null;
+            StatementData sdt = new StatementData(stmt);
+            sdt.addInt(userId);
+
+            res = stmt.executeQuery();
+            if (res.next()) {
+                SqlDataRecord rec = new SqlDataRecord(res);
+                return loadUser(rec);
+            } else {
+                return null;
+            }
+        } finally {
+            Util.closeResultSet(res);
+            Util.closeStatement(stmt);
+            Util.closeConnection(conn);
         }
     }
 
     public User getUserForLogin(String username, String passwordSha256) throws SQLException, DataException
     {
-        Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement("select " + generateUserSelectList("u.") + " from users u where u.username=? and u.passwordsha256=?");
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet res = null;
 
-        StatementData sdt = new StatementData(stmt);
-        sdt.addString(username);
-        sdt.addString(passwordSha256);
+        try {
+            conn = dataSource.getConnection();
+            stmt = conn.prepareStatement("select " + generateUserSelectList("u.") + " from users u where u.username=? and u.passwordsha256=?");
 
-        ResultSet res = stmt.executeQuery();
-        if (res.next()) {
-            SqlDataRecord rec = new SqlDataRecord(res);
-            return loadUser(rec);
-        } else {
-            return null;
+            StatementData sdt = new StatementData(stmt);
+            sdt.addString(username);
+            sdt.addString(passwordSha256);
+
+            res = stmt.executeQuery();
+            if (res.next()) {
+                SqlDataRecord rec = new SqlDataRecord(res);
+                return loadUser(rec);
+            } else {
+                return null;
+            }
+        } finally {
+            Util.closeResultSet(res);
+            Util.closeStatement(stmt);
+            Util.closeConnection(conn);
         }
     }
 
     public boolean testUserExists(String username) throws SQLException, DataException
     {
-        Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement("select 1 from users u where u.username=?");
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet res = null;
 
-        StatementData sdt = new StatementData(stmt);
-        sdt.addString(username);
+        try {
+            conn = dataSource.getConnection();
+            stmt = conn.prepareStatement("select 1 from users u where u.username=?");
 
-        ResultSet res = stmt.executeQuery();
-        return res.next();
+            StatementData sdt = new StatementData(stmt);
+            sdt.addString(username);
+
+            res = stmt.executeQuery();
+            return res.next();
+        } finally {
+            Util.closeResultSet(res);
+            Util.closeStatement(stmt);
+            Util.closeConnection(conn);
+        }
     }
 
 //    public UserWithStatistics getUserWithStatistics(int userId) throws SQLException, DataException
@@ -101,60 +141,96 @@ public class UserDAO
 
     public List<User> getUsers() throws SQLException, DataException
     {
-        Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement("select " + generateUserSelectList("u.") + " from users u");
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet res = null;
 
-        ResultSet res = stmt.executeQuery();
-        List<User> users = new ArrayList<>();
-        while (res.next()) {
-            SqlDataRecord rec = new SqlDataRecord(res);
-            users.add(loadUser(rec));
+        try {
+            conn = dataSource.getConnection();
+            stmt = conn.prepareStatement("select " + generateUserSelectList("u.") + " from users u");
+
+            res = stmt.executeQuery();
+            List<User> users = new ArrayList<>();
+            while (res.next()) {
+                SqlDataRecord rec = new SqlDataRecord(res);
+                users.add(loadUser(rec));
+            }
+
+            return users;
+        } finally {
+            Util.closeResultSet(res);
+            Util.closeStatement(stmt);
+            Util.closeConnection(conn);
         }
-
-        return users;
     }
 
     public void updateUser(int userId, String firstName, String lastName, String username, String passwordSha256) throws SQLException
     {
-        Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement("update users set firstname=?, lastname=?, username=?, passwordsha256=? where id=?");
+        Connection conn = null;
+        PreparedStatement stmt = null;
 
-        StatementData sdt = new StatementData(stmt);
-        sdt.addString(firstName);
-        sdt.addString(lastName);
-        sdt.addString(username);
-        sdt.addString(passwordSha256);
+        try {
+            conn = dataSource.getConnection();
+            stmt = conn.prepareStatement("update users set firstname=?, lastname=?, username=?, passwordsha256=? where id=?");
 
-        sdt.addInt(userId);
+            StatementData sdt = new StatementData(stmt);
+            sdt.addString(firstName);
+            sdt.addString(lastName);
+            sdt.addString(username);
+            sdt.addString(passwordSha256);
 
-        stmt.execute();
+            sdt.addInt(userId);
+
+            stmt.execute();
+        } finally {
+            Util.closeStatement(stmt);
+            Util.closeConnection(conn);
+        }
     }
 
     public void deleteUser(int userId) throws SQLException
     {
-        Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement("delete from users where id=?");
+        Connection conn = null;
+        PreparedStatement stmt = null;
 
-        StatementData sdt = new StatementData(stmt);
-        sdt.addInt(userId);
+        try {
+            conn = dataSource.getConnection();
+            stmt = conn.prepareStatement("delete from users where id=?");
 
-        stmt.execute();
+            StatementData sdt = new StatementData(stmt);
+            sdt.addInt(userId);
+
+            stmt.execute();
+        } finally {
+            Util.closeStatement(stmt);
+            Util.closeConnection(conn);
+        }
     }
 
     public String canDeleteUser(int userId) throws SQLException, DataException
     {
-        Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement(
-                "select case when exists (select 1 from posts p where p.createuserid=?) then 'Post'"
-                        + "else null end");
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet res = null;
 
-        StatementData sdt = new StatementData(stmt);
-        sdt.addInt(userId);
+        try {
+            conn = dataSource.getConnection();
+            stmt = conn.prepareStatement(
+                    "select case when exists (select 1 from posts p where p.createuserid=?) then 'Post'"
+                            + "else null end");
 
-        ResultSet res = stmt.executeQuery();
-        res.next();
+            StatementData sdt = new StatementData(stmt);
+            sdt.addInt(userId);
 
-        return res.getString(1);
+            res = stmt.executeQuery();
+            res.next();
+
+            return res.getString(1);
+        } finally {
+            Util.closeResultSet(res);
+            Util.closeStatement(stmt);
+            Util.closeConnection(conn);
+        }
     }
 
     private String generateUserSelectList(String prefix)

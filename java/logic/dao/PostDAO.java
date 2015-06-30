@@ -9,6 +9,7 @@ import org.joda.time.DateTime;
 
 import pvgoran.dataaccess.*;
 
+import logic.Util;
 import logic.model.Post;
 
 public class PostDAO
@@ -20,75 +21,119 @@ public class PostDAO
 
     public int createPost(int createUserId, String text) throws SQLException
     {
-        Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement("insert into posts(createuserid, createtimestamp, updatetimestamp, text) values (?, ?, ?, ?) returning id");
+        Connection conn = null;
+        PreparedStatement stmt = null;
 
-        StatementData sdt = new StatementData(stmt);
-        sdt.addInt(createUserId);
-        sdt.addTimestamp(DateTime.now());
-        sdt.addTimestamp(DateTime.now());
-        sdt.addString(text);
+        try {
+            conn = dataSource.getConnection();
+            stmt = conn.prepareStatement("insert into posts(createuserid, createtimestamp, updatetimestamp, text) values (?, ?, ?, ?) returning id");
 
-        ResultSet lastIdRes = stmt.executeQuery();
-        lastIdRes.next();
-        return lastIdRes.getInt(1);
+            StatementData sdt = new StatementData(stmt);
+            sdt.addInt(createUserId);
+            sdt.addTimestamp(DateTime.now());
+            sdt.addTimestamp(DateTime.now());
+            sdt.addString(text);
+
+            ResultSet lastIdRes = stmt.executeQuery();
+            lastIdRes.next();
+            return lastIdRes.getInt(1);
+        } finally {
+            Util.closeStatement(stmt);
+            Util.closeConnection(conn);
+        }
     }
 
     public Post getPost(int postId) throws SQLException, DataException
     {
-        Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement("select " + generatePostSelectList("p.") + " from posts p where p.id=?");
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet res = null;
 
-        StatementData sdt = new StatementData(stmt);
-        sdt.addInt(postId);
+        try {
+            conn = dataSource.getConnection();
+            stmt = conn.prepareStatement("select " + generatePostSelectList("p.") + " from posts p where p.id=?");
 
-        ResultSet res = stmt.executeQuery();
-        if (res.next()) {
-            SqlDataRecord rec = new SqlDataRecord(res);
-            return loadPost(rec);
-        } else {
-            return null;
+            StatementData sdt = new StatementData(stmt);
+            sdt.addInt(postId);
+
+            res = stmt.executeQuery();
+            if (res.next()) {
+                SqlDataRecord rec = new SqlDataRecord(res);
+                return loadPost(rec);
+            } else {
+                return null;
+            }
+        } finally {
+            Util.closeResultSet(res);
+            Util.closeStatement(stmt);
+            Util.closeConnection(conn);
         }
     }
 
     public List<Post> getPosts() throws SQLException, DataException
     {
-        Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement("select " + generatePostSelectList("p.") + " from posts p");
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet res = null;
 
-        ResultSet res = stmt.executeQuery();
-        List<Post> posts = new ArrayList<>();
-        while (res.next()) {
-            SqlDataRecord rec = new SqlDataRecord(res);
-            posts.add(loadPost(rec));
+        try {
+            conn = dataSource.getConnection();
+            stmt = conn.prepareStatement("select " + generatePostSelectList("p.") + " from posts p");
+
+            res = stmt.executeQuery();
+            List<Post> posts = new ArrayList<>();
+            while (res.next()) {
+                SqlDataRecord rec = new SqlDataRecord(res);
+                posts.add(loadPost(rec));
+            }
+
+            return posts;
+        } finally {
+            Util.closeResultSet(res);
+            Util.closeStatement(stmt);
+            Util.closeConnection(conn);
         }
-
-        return posts;
     }
 
     public void updatePost(int postId, DateTime updateTimestamp, String text) throws SQLException
     {
-        Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement("update posts set updatetimestamp=?, text=? where id=?");
+        Connection conn = null;
+        PreparedStatement stmt = null;
 
-        StatementData sdt = new StatementData(stmt);
-        sdt.addTimestamp(updateTimestamp);
-        sdt.addString(text);
+        try {
+            conn = dataSource.getConnection();
+            stmt = conn.prepareStatement("update posts set updatetimestamp=?, text=? where id=?");
 
-        sdt.addInt(postId);
+            StatementData sdt = new StatementData(stmt);
+            sdt.addTimestamp(updateTimestamp);
+            sdt.addString(text);
 
-        stmt.execute();
+            sdt.addInt(postId);
+
+            stmt.execute();
+        } finally {
+            Util.closeStatement(stmt);
+            Util.closeConnection(conn);
+        }
     }
 
     public void deletePost(int postId) throws SQLException
     {
-        Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement("delete from posts where id=?");
+        Connection conn = null;
+        PreparedStatement stmt = null;
 
-        StatementData sdt = new StatementData(stmt);
-        sdt.addInt(postId);
+        try {
+            conn = dataSource.getConnection();
+            stmt = conn.prepareStatement("delete from posts where id=?");
 
-        stmt.execute();
+            StatementData sdt = new StatementData(stmt);
+            sdt.addInt(postId);
+
+            stmt.execute();
+        } finally {
+            Util.closeStatement(stmt);
+            Util.closeConnection(conn);
+        }
     }
 
     private String generatePostSelectList(String prefix)
