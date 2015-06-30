@@ -38,7 +38,7 @@ public class UserDAO
     public User getUser(int userId) throws SQLException, DataException
     {
         Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement("select u.id, u.createtimestamp, u.firstname, u.lastname, u.username, u.passwordsha256 from users u where u.id=?");
+        PreparedStatement stmt = conn.prepareStatement("select " + generateUserSelectList("u.") + " from users u where u.id=?");
 
         StatementData sdt = new StatementData(stmt);
         sdt.addInt(userId);
@@ -55,7 +55,7 @@ public class UserDAO
     public User getUserForLogin(String username, String passwordSha256) throws SQLException, DataException
     {
         Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement("select u.id, u.createtimestamp, u.firstname, u.lastname, u.username, u.passwordsha256 from users u where u.username=? and u.passwordsha256=?");
+        PreparedStatement stmt = conn.prepareStatement("select " + generateUserSelectList("u.") + " from users u where u.username=? and u.passwordsha256=?");
 
         StatementData sdt = new StatementData(stmt);
         sdt.addString(username);
@@ -102,7 +102,7 @@ public class UserDAO
     public List<User> getUsers() throws SQLException, DataException
     {
         Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement("select u.id, u.createtimestamp, u.firstname, u.lastname, u.username, u.passwordsha256 from users u");
+        PreparedStatement stmt = conn.prepareStatement("select " + generateUserSelectList("u.") + " from users u");
 
         ResultSet res = stmt.executeQuery();
         List<User> users = new ArrayList<>();
@@ -155,6 +155,11 @@ public class UserDAO
         res.next();
 
         return res.getString(1);
+    }
+
+    private String generateUserSelectList(String prefix)
+    {
+        return String.format("%1$sid, %1$screatetimestamp, %1$sfirstname, %1$slastname, %1$susername, %1$spasswordsha256", prefix);
     }
 
     private User loadUser(SqlDataRecord rec) throws DataException

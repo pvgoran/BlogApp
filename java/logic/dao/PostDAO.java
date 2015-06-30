@@ -37,7 +37,7 @@ public class PostDAO
     public Post getPost(int postId) throws SQLException, DataException
     {
         Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement("select p.id, p.createuserid, p.createtimestamp, p.updatetimestamp, p.text from posts p where p.id=?");
+        PreparedStatement stmt = conn.prepareStatement("select " + generatePostSelectList("p.") + " from posts p where p.id=?");
 
         StatementData sdt = new StatementData(stmt);
         sdt.addInt(postId);
@@ -54,7 +54,7 @@ public class PostDAO
     public List<Post> getPosts() throws SQLException, DataException
     {
         Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement("select p.id, p.createuserid, p.createtimestamp, p.updatetimestamp, p.text from posts p");
+        PreparedStatement stmt = conn.prepareStatement("select " + generatePostSelectList("p.") + " from posts p");
 
         ResultSet res = stmt.executeQuery();
         List<Post> posts = new ArrayList<>();
@@ -89,6 +89,11 @@ public class PostDAO
         sdt.addInt(postId);
 
         stmt.execute();
+    }
+
+    private String generatePostSelectList(String prefix)
+    {
+        return String.format("%1$sid, %1$screateuserid, %1$screatetimestamp, %1$supdatetimestamp, %1$stext", prefix);
     }
 
     private Post loadPost(SqlDataRecord rec) throws DataException
